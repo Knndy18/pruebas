@@ -1,0 +1,93 @@
+<!-- Mobile Toggle Button -->
+<button class="mobile-toggle" (click)="toggleSidebar()">
+  <span class="nav-icon">☰</span>
+</button>
+
+<!-- Mobile Overlay -->
+<div class="mobile-overlay" [class.open]="sidebarOpen" (click)="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" [class.open]="sidebarOpen">
+  <!-- Sidebar Header -->
+  <div class="sidebar-header">
+    <a href="#" class="logo">
+      <div class="logo-icon">📄</div>
+      <span class="logo-text">Sistema Papelería</span>
+    </a>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar-nav">
+    <!-- Main Section -->
+    <div class="nav-section">
+      <h3 class="nav-section-title">Principal</h3>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a routerLink="/home" routerLinkActive="active" class="nav-link" (click)="closeSidebar()">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Inicio</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Management Section -->
+    <div class="nav-section">
+      <h3 class="nav-section-title">Gestión</h3>
+      <ul class="nav-list">
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a routerLink="/empleados" routerLinkActive="active" class="nav-link" (click)="closeSidebar()">
+            <span class="nav-icon">👥</span>
+            <span class="nav-text">Empleados</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/productos" routerLinkActive="active" class="nav-link" (click)="closeSidebar()">
+            <span class="nav-icon">📦</span>
+            <span class="nav-text">Productos</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/servicios" routerLinkActive="active" class="nav-link" (click)="closeSidebar()">
+            <span class="nav-icon">🔧</span>
+            <span class="nav-text">Servicios</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Sales Section -->
+    <div class="nav-section">
+      <h3 class="nav-section-title">Ventas</h3>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a routerLink="/ventas" routerLinkActive="active" class="nav-link" (click)="closeSidebar()">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">Historial de Ventas</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/crear-venta" routerLinkActive="active" class="nav-link" (click)="closeSidebar()">
+            <span class="nav-icon">💰</span>
+            <span class="nav-text">Nueva Venta</span>
+            <span class="nav-badge">+</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">{{ currentUser?.nombre?.charAt(0) || 'U' }}</div>
+      <div class="user-details">
+        <div class="user-name">{{ currentUser?.nombre || 'Usuario' }}</div>
+        <div class="user-role">{{ currentUser?.rol === 'admin' ? 'Administrador' : 'Empleado' }}</div>
+      </div>
+    </div>
+    <button class="logout-btn" (click)="logout()" title="Cerrar Sesión">
+      <span class="nav-icon">🚪</span>
+    </button>
+  </div>
+</aside>

@@ -1,0 +1,227 @@
+<div class="crear-venta-page">
+  <div class="page-container">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">💰 Registrar Nueva Venta</h1>
+        <p class="page-subtitle">Gestión de ventas de productos y servicios de manera eficiente</p>
+      </div>
+      <div class="header-actions">
+        <button (click)="resetForm()" class="btn btn-secondary" [disabled]="loading">
+          <span class="btn-icon">🔄</span>
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>{{ loadingMessage }}</p>
+    </div>
+
+    <div *ngIf="error" class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>Error en el proceso</h3>
+      <p>{{ error }}</p>
+      <button (click)="cargarDatos()" class="btn btn-primary">
+        Reintentar
+      </button>
+    </div>
+
+    <div *ngIf="successMessage" class="success-state">
+      <div class="success-icon">✅</div>
+      <h3>¡Venta registrada exitosamente!</h3>
+      <p>{{ successMessage }}</p>
+      <button (click)="resetForm()" class="btn btn-primary">
+        Nueva Venta
+      </button>
+    </div>
+
+    <form *ngIf="!loading && !successMessage" (ngSubmit)="registrarVenta()" class="venta-form">
+      <!-- Sección 1: Empleado -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">👤</div>
+          <div class="section-info">
+            <h3 class="section-title">1. Empleado Responsable</h3>
+            <p class="section-description">Selecciona el empleado que realiza la venta</p>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="empleado" class="form-label">Empleado:</label>
+          <select [(ngModel)]="venta.empleado" name="empleado" id="empleado" required class="form-control">
+            <option value="">Seleccione un empleado</option>
+            <option *ngFor="let empleado of empleados" [value]="empleado.id">
+              {{ empleado.nombre }} ({{ empleado.dni }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Sección 2: Productos -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">📦</div>
+          <div class="section-info">
+            <h3 class="section-title">2. Productos</h3>
+            <p class="section-description">Agrega productos a la venta</p>
+          </div>
+          <button type="button" (click)="agregarProducto()" class="btn btn-sm btn-primary">
+            <span>➕</span>
+            Agregar Producto
+          </button>
+        </div>
+
+        <div *ngIf="venta.productos.length === 0" class="empty-section">
+          <div class="empty-icon">📦</div>
+          <p>No hay productos agregados</p>
+          <span class="empty-hint">Haz clic en "Agregar Producto" para comenzar</span>
+        </div>
+
+        <div *ngFor="let producto of venta.productos; let i = index" class="item-card">
+          <div class="item-header">
+            <div class="item-number">{{ i + 1 }}</div>
+            <div class="item-actions">
+              <button type="button" (click)="eliminarProducto(i)" class="btn-remove">
+                <span>🗑️</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="item-content">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Producto:</label>
+                <select [(ngModel)]="producto.producto" name="producto_{{i}}" required class="form-control">
+                  <option value="">Seleccione un producto</option>
+                  <option *ngFor="let p of productos" [value]="p.id">
+                    {{ p.nombre }} - {{ formatCurrency(p.precio) }} (Stock: {{ p.stock }})
+                  </option>
+                </select>
+              </div>
+              
+              <div class="form-group quantity-group">
+                <label class="form-label">Cantidad:</label>
+                <div class="quantity-controls">
+                  <button type="button" (click)="decrementQuantity('producto', i)" class="quantity-btn">-</button>
+                  <input type="number" [(ngModel)]="producto.cantidad" name="cantidad_producto_{{i}}" 
+                         min="1" required class="form-control quantity-input">
+                  <button type="button" (click)="incrementQuantity('producto', i)" class="quantity-btn">+</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="item-total">
+              <span class="total-label">Subtotal:</span>
+              <span class="total-value">{{ formatCurrency(calcularSubtotalProducto(producto)) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 3: Servicios -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">🛠️</div>
+          <div class="section-info">
+            <h3 class="section-title">3. Servicios</h3>
+            <p class="section-description">Agrega servicios a la venta</p>
+          </div>
+          <button type="button" (click)="agregarServicio()" class="btn btn-sm btn-primary">
+            <span>➕</span>
+            Agregar Servicio
+          </button>
+        </div>
+
+        <div *ngIf="venta.servicios.length === 0" class="empty-section">
+          <div class="empty-icon">🛠️</div>
+          <p>No hay servicios agregados</p>
+          <span class="empty-hint">Haz clic en "Agregar Servicio" para comenzar</span>
+        </div>
+
+        <div *ngFor="let servicio of venta.servicios; let i = index" class="item-card">
+          <div class="item-header">
+            <div class="item-number">{{ i + 1 }}</div>
+            <div class="item-actions">
+              <button type="button" (click)="eliminarServicio(i)" class="btn-remove">
+                <span>🗑️</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="item-content">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Servicio:</label>
+                <select [(ngModel)]="servicio.servicio" name="servicio_{{i}}" required class="form-control">
+                  <option value="">Seleccione un servicio</option>
+                  <option *ngFor="let s of servicios" [value]="s.id">
+                    {{ s.descripcion }} - {{ formatCurrency(s.precio) }}
+                  </option>
+                </select>
+              </div>
+              
+              <div class="form-group quantity-group">
+                <label class="form-label">Cantidad:</label>
+                <div class="quantity-controls">
+                  <button type="button" (click)="decrementQuantity('servicio', i)" class="quantity-btn">-</button>
+                  <input type="number" [(ngModel)]="servicio.cantidad" name="cantidad_servicio_{{i}}" 
+                         min="1" required class="form-control quantity-input">
+                  <button type="button" (click)="incrementQuantity('servicio', i)" class="quantity-btn">+</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="item-total">
+              <span class="total-label">Subtotal:</span>
+              <span class="total-value">{{ formatCurrency(calcularSubtotalServicio(servicio)) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 4: Resumen y Total -->
+      <div class="form-section summary-section">
+        <div class="section-header">
+          <div class="section-icon">💰</div>
+          <div class="section-info">
+            <h3 class="section-title">4. Resumen de la Venta</h3>
+            <p class="section-description">Verifica el total antes de procesar</p>
+          </div>
+        </div>
+
+        <div class="summary-content">
+          <div class="summary-row">
+            <span class="summary-label">Productos ({{ venta.productos.length }}):</span>
+            <span class="summary-value">{{ formatCurrency(calcularTotalProductos()) }}</span>
+          </div>
+          
+          <div class="summary-row">
+            <span class="summary-label">Servicios ({{ venta.servicios.length }}):</span>
+            <span class="summary-value">{{ formatCurrency(calcularTotalServicios()) }}</span>
+          </div>
+          
+          <div class="summary-divider"></div>
+          
+          <div class="summary-row total-row">
+            <span class="summary-label">Total General:</span>
+            <span class="summary-total">{{ formatCurrency(calcularTotal()) }}</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="resetForm()" class="btn btn-secondary" [disabled]="loading">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-success" [disabled]="loading || !isFormValid()">
+            <span *ngIf="!loading">💾 Registrar Venta</span>
+            <span *ngIf="loading" class="loading-text">
+              <span class="mini-spinner"></span>
+              Procesando...
+            </span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

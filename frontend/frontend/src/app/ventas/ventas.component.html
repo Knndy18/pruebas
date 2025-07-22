@@ -1,0 +1,95 @@
+<div class="ventas-page">
+  <div class="page-header">
+    <h1 class="page-title">📊 Historial de Ventas</h1>
+    <p class="page-subtitle">Registro completo de todas las transacciones realizadas</p>
+    <div class="header-actions">
+      <a routerLink="/crear-venta" class="btn btn-primary btn-lg">
+        <span>💰</span>
+        Nueva Venta
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Cargando historial de ventas...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <div class="error-message">
+      <p>⚠️ {{ error }}</p>
+      <button (click)="cargarVentas()" class="btn btn-error">Reintentar</button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && ventas.length > 0" class="ventas-grid">
+    <div *ngFor="let venta of ventas; let i = index" class="venta-card" [style.animation-delay]="(i * 100) + 'ms'">
+      <div class="venta-header">
+        <div class="venta-id">
+          <span class="id-label">Venta #</span>
+          <span class="id-number">{{ venta.id }}</span>
+        </div>
+        <div class="venta-date">
+          <span class="date-icon">📅</span>
+          <span class="date-text">{{ venta.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <div class="venta-body">
+        <div class="empleado-info">
+          <div class="empleado-avatar">{{ (venta.empleado_nombre || 'E').charAt(0) }}</div>
+          <div class="empleado-details">
+            <span class="empleado-label">Vendedor:</span>
+            <span class="empleado-name">{{ venta.empleado_nombre || 'Sin asignar' }}</span>
+          </div>
+        </div>
+
+        <div class="venta-items" *ngIf="(venta.detalles_productos && venta.detalles_productos.length > 0) || (venta.detalles_servicios && venta.detalles_servicios.length > 0)">
+          <h4 class="items-title">Productos y Servicios:</h4>
+          
+          <!-- Productos -->
+          <div *ngFor="let detalle of venta.detalles_productos" class="item-detail">
+            <div class="item-icon">📦</div>
+            <div class="item-info">
+              <span class="item-name">{{ detalle.producto_nombre }}</span>
+              <span class="item-quantity">Cantidad: {{ detalle.cantidad }}</span>
+              <span class="item-price">${{ detalle.precio_unitario | number:'1.2-2' }} c/u</span>
+            </div>
+            <div class="item-subtotal">
+              ${{ detalle.subtotal | number:'1.2-2' }}
+            </div>
+          </div>
+
+          <!-- Servicios -->
+          <div *ngFor="let detalle of venta.detalles_servicios" class="item-detail">
+            <div class="item-icon">🔧</div>
+            <div class="item-info">
+              <span class="item-name">{{ detalle.servicio_nombre }}</span>
+              <span class="item-detail-text" *ngIf="detalle.detalle">{{ detalle.detalle }}</span>
+            </div>
+            <div class="item-subtotal">
+              ${{ detalle.precio_unitario | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="venta-footer">
+        <div class="total-amount">
+          <span class="total-label">Total:</span>
+          <span class="total-value">${{ venta.total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && ventas.length === 0" class="empty-state">
+    <div class="empty-state-icon">📊</div>
+    <h3 class="empty-state-title">No hay ventas registradas</h3>
+    <p class="empty-state-description">Aún no se han registrado ventas en el sistema. ¡Comienza creando tu primera venta!</p>
+    <a routerLink="/crear-venta" class="btn btn-primary">
+      <span>💰</span>
+      Crear Primera Venta
+    </a>
+  </div>
+</div>

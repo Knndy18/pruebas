@@ -1,0 +1,121 @@
+<div class="servicios-page">
+  <div class="page-container">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">🛠️ Servicios Disponibles</h1>
+        <p class="page-subtitle">Gestiona todos los servicios que ofrece tu papelería</p>
+      </div>
+      <div class="header-actions">
+        <button (click)="reloadServicios()" class="btn btn-secondary">
+          <span class="btn-icon">🔄</span>
+          Actualizar
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando servicios...</p>
+    </div>
+
+    <div *ngIf="error" class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>Error al cargar servicios</h3>
+      <p>{{ error }}</p>
+      <button (click)="cargarServicios()" class="btn btn-primary">
+        Reintentar
+      </button>
+    </div>
+
+    <div *ngIf="!loading && !error" class="servicios-content">
+      <div *ngIf="servicios.length === 0" class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>No hay servicios registrados</h3>
+        <p>Aún no se han registrado servicios en el sistema.</p>
+      </div>
+
+      <div *ngIf="servicios.length > 0" class="servicios-grid">
+        <div *ngFor="let servicio of servicios; let i = index" 
+             class="servicio-card"
+             [style.animation-delay]="(i * 0.1) + 's'">
+          
+          <div class="card-header">
+            <div class="servicio-icon">
+              <span>🔧</span>
+            </div>
+            <div class="servicio-info">
+              <h3 class="servicio-titulo">{{ servicio.descripcion }}</h3>
+              <div class="servicio-id">ID: #{{ servicio.id }}</div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="precio-section">
+              <div class="precio-label">Precio del servicio</div>
+              <div class="precio-value">
+                {{ formatCurrency(servicio.precio) }}
+              </div>
+            </div>
+
+            <div class="servicio-details">
+              <div class="detail-item">
+                <div class="detail-icon">💼</div>
+                <div class="detail-content">
+                  <div class="detail-label">Tipo</div>
+                  <div class="detail-value">Servicio profesional</div>
+                </div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-icon">⏱️</div>
+                <div class="detail-content">
+                  <div class="detail-label">Disponibilidad</div>
+                  <div class="detail-value">Disponible</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="action-btn primary">
+              <span>Ver detalles</span>
+              <span class="arrow">→</span>
+            </button>
+            <button class="action-btn secondary">
+              <span>📞</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="servicios.length > 0" class="servicios-summary">
+        <div class="summary-card">
+          <div class="summary-icon">📊</div>
+          <div class="summary-content">
+            <h4>Total de Servicios</h4>
+            <div class="summary-number">{{ servicios.length }}</div>
+            <p>servicios disponibles</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-icon">💰</div>
+          <div class="summary-content">
+            <h4>Precio Promedio</h4>
+            <div class="summary-number">{{ formatCurrency(getPrecioPromedio()) }}</div>
+            <p>precio promedio</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-icon">⭐</div>
+          <div class="summary-content">
+            <h4>Estado</h4>
+            <div class="summary-status">Activos</div>
+            <p>todos disponibles</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

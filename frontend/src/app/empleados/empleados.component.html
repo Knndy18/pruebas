@@ -1,0 +1,47 @@
+<div class="empleados-page">
+  <div class="page-header">
+    <h1 class="page-title">👥 Empleados</h1>
+    <p class="page-subtitle">Gestión de personal de la papelería</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Cargando empleados...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <div class="error-message">
+      <p>⚠️ {{ error }}</p>
+      <button (click)="cargarEmpleados()" class="btn btn-error">Reintentar</button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error" class="empleados-grid">
+    <div *ngFor="let empleado of empleados" class="empleado-card">
+      <div class="empleado-header">
+        <div class="empleado-avatar">{{ empleado.nombre.charAt(0) }}</div>
+        <div class="empleado-info">
+          <h3>{{ empleado.nombre }}</h3>
+        </div>
+      </div>
+      <div class="empleado-details">
+        <div class="empleado-detail">
+          <span class="icon">🆔</span>
+          <span class="label">DNI:</span>
+          <span class="value">{{ empleado.dni }}</span>
+        </div>
+        <div class="empleado-detail">
+          <span class="icon">📧</span>
+          <span class="label">Email:</span>
+          <span class="value">{{ empleado.correo }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && empleados.length === 0" class="empty-state">
+    <div class="empty-state-icon">�</div>
+    <h3 class="empty-state-title">No hay empleados registrados</h3>
+    <p class="empty-state-description">Aún no hay empleados en el sistema. Contacta al administrador para agregar empleados.</p>
+  </div>
+</div>
