@@ -1,9 +1,10 @@
 {
   "version": 2,
   "name": "frontend-pweb2",
-  "outputDirectory": "dist/frontend/browser",
+  "buildCommand": "cd frontend && npm install && npm run build:vercel",
+  "outputDirectory": "frontend/dist/frontend/browser",
+  "installCommand": "cd frontend && npm install",
   "framework": null,
-  "cwd": "frontend",
   "rewrites": [
     {
       "source": "/(.*)",
