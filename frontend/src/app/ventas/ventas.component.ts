@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../shared/api.service';
+import { RouterModule } from '@angular/router';
 
 interface DetalleProducto {
   id: number;
@@ -34,7 +35,7 @@ interface Venta {
 @Component({
   selector: 'app-ventas',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.css']
 })

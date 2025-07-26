@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -11,16 +11,18 @@ import { AuthService, LoginRequest } from '../services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
+
+
 export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
   error = '';
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
+  private formBuilder = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  constructor() {
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -43,18 +45,18 @@ export class LoginComponent {
     };
 
     this.authService.login(credentials).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.loading = false;
         // Redirigir según el rol del usuario
-        if (response.user.rol === 'admin') {
+        if (response && response.user && response.user.rol === 'admin') {
           this.router.navigate(['/empleados']);
         } else {
           this.router.navigate(['/home']);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         this.loading = false;
-        this.error = error.error?.error || 'Error de autenticación. Verifique sus credenciales.';
+        this.error = error?.error?.error || 'Error de autenticación. Verifique sus credenciales.';
       }
     });
   }
